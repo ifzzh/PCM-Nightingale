@@ -1,0 +1,28 @@
+# 忽略pcm目录
+/pcm/
+
+# 编译生成文件
+build/
+bin/
+*.o
+*.a
+*.so
+
+# 临时文件
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+
+# 开发环境配置
+.vscode/
+.idea/
+
+# 日志文件
+*.log
+
+# 本地配置文件
+.env
+.env.local
