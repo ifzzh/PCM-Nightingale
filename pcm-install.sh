@@ -18,8 +18,8 @@ SECTION_COLOR="$(tput setaf 4)"
 RESET_COLOR="$(tput sgr0)"
 
 # 系统更新部分添加绿色进度提示
-echo "${SUCCESS_COLOR}▶ 正在更新系统软件包...${RESET_COLOR}"
-sudo yum update -y || { echo "${ERROR_COLOR}✖ 系统更新失败${RESET_COLOR}"; exit 1; }
+# echo "${SUCCESS_COLOR}▶ 正在更新系统软件包...${RESET_COLOR}"
+# sudo yum update -y || { echo "${ERROR_COLOR}✖ 系统更新失败${RESET_COLOR}"; exit 1; }
 
 # 软件安装部分添加绿色进度提示
 echo "${SUCCESS_COLOR}▶ 正在安装所需软件包...${RESET_COLOR}"
@@ -35,26 +35,19 @@ git clone --recursive https://github.com/intel/pcm || { echo "${ERROR_COLOR}✖ 
 echo "${SECTION_COLOR}════════════════════════════════════════"
 echo " 正在构建 PCM 工具 "
 echo "════════════════════════════════════════${RESET_COLOR}"
-cd build || { echo "${ERROR_COLOR}✖ 切换构建目录失败${RESET_COLOR}"; exit 1; }
-cmake .. || { echo "${ERROR_COLOR}✖ CMake配置失败${RESET_COLOR}"; exit 1; }
-cmake --build . || { echo "${ERROR_COLOR}✖ 构建失败${RESET_COLOR}"; exit 1; }
-
 echo "切换到 pcm 目录..."
 cd pcm
 
 echo "创建构建目录..."
 mkdir build || { echo '创建构建目录失败'; exit 1; }
 
-echo "切换到构建目录..."
-cd build || { echo '切换构建目录失败'; exit 1; }
+cd build || { echo "${ERROR_COLOR}✖ 切换构建目录失败${RESET_COLOR}"; exit 1; }
 
 build_dir=$(pwd)
 
-echo "使用 cmake 配置构建..."
-cmake .. || { echo 'CMake配置失败'; exit 1; }
+cmake .. || { echo "${ERROR_COLOR}✖ CMake配置失败${RESET_COLOR}"; exit 1; }
+cmake --build . || { echo "${ERROR_COLOR}✖ 构建失败${RESET_COLOR}"; exit 1; }
 
-echo "正在构建 pcm..."
-cmake --build . || { echo '构建失败'; exit 1; }
 
 echo "切换到工具目录..."
 cd bin
