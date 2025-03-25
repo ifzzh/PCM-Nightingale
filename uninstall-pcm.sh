@@ -2,7 +2,7 @@
 
 # 删除pcm源码目录
 echo "正在删除pcm安装目录..."
-rm -rf "$(dirname \"$0\")/pcm"
+rm -rf "./pcm"
 
 # 删除符号链接目录
 echo "正在删除符号链接..."
