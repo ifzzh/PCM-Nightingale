@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
 
+CLEANUP=true
+
 cleanup() {
-    echo '执行清理操作...'
-    [ -d "pcm" ] && rm -rf pcm
-    [ -d "$HOME/pcm-bin" ] && rm -rf "$HOME/pcm-bin"
+    if [ "$CLEANUP" = "true" ]; then
+        echo '执行清理操作...'
+        [ -d "pcm" ] && rm -rf pcm
+        [ -d "$HOME/pcm-bin" ] && rm -rf "$HOME/pcm-bin"
+    fi
 }
 trap cleanup EXIT
 
@@ -29,7 +33,7 @@ sudo yum install -y git cmake libasan gcc gcc-c++ || { echo "${ERROR_COLOR}✖ �
 echo "${SECTION_COLOR}════════════════════════════════════════"
 echo " 正在克隆 pcm 仓库 "
 echo "════════════════════════════════════════${RESET_COLOR}"
-git clone --recursive https://github.com/intel/pcm || { echo "${ERROR_COLOR}✖ 仓库克隆失败${RESET_COLOR}"; exit 1; }
+git clone --recursive ssh://git@192.168.1.250:222/zzh/pcm.git || { echo "${ERROR_COLOR}✖ 仓库克隆失败，请确保已连接实验室内网${RESET_COLOR}"; exit 1; }
 
 # 编译构建部分添加蓝色分隔线
 echo "${SECTION_COLOR}════════════════════════════════════════"
@@ -77,6 +81,8 @@ RESET_COLOR="$(tput sgr0)"
 
 cat <<EOF
 
+CLEANUP=false
+
 ${SUCCESS_COLOR}=== PCM 工具安装完成 ===${RESET_COLOR}
 
 现在可以通过以下命令使用 PCM 监控工具：
@@ -98,3 +104,5 @@ ${SUCCESS_COLOR}─────────────────────�
 建议使用 sudo 执行监控命令
 ──────────────────────${RESET_COLOR}
 EOF
+
+CLEANUP=false
