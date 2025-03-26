@@ -20,8 +20,7 @@ progress_bar() {
   
   info "$1..."
   for i in {1..10}; do
-    printf "[%-3s] %s" "${spinstr:0:1}" "${BLUE}◼${RESET}"."${YELLOW}◼${RESET}"."${GREEN}◼${RESET}"
-"
+    printf "[%-3s] \033[34m◼\033[0m.\033[33m◼\033[0m.\033[32m◼\033[0m" "${spinstr:0:1}"
     spinstr=${spinstr#?}${spinstr%???}
     sleep $delay
   done
