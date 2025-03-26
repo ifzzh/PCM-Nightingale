@@ -54,7 +54,7 @@ if [ ! -f "./Prometheus-start.sh" ]; then
     error "Prometheus启动脚本不存在"
 fi
 chmod +x ./Prometheus-start.sh || error "Prometheus脚本权限设置失败"
-./Prometheus-start.sh || error "Prometheus启动失败"
+./Prometheus-start.sh "$1:9738" || error "Prometheus启动失败"
 
 progress_bar "Finalizing configuration"
 success "Installation completed successfully!"
