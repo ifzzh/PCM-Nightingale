@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
 
+CLEANUP=true
+
 cleanup() {
-    echo '执行清理操作...'
-    [ -d "pcm" ] && rm -rf pcm
-    [ -d "$HOME/pcm-bin" ] && rm -rf "$HOME/pcm-bin"
+    if [ "$CLEANUP" = "true" ]; then
+        echo '执行清理操作...'
+        [ -d "pcm" ] && rm -rf pcm
+        [ -d "$HOME/pcm-bin" ] && rm -rf "$HOME/pcm-bin"
+    fi
 }
 trap cleanup EXIT
 
@@ -18,8 +22,8 @@ SECTION_COLOR="$(tput setaf 4)"
 RESET_COLOR="$(tput sgr0)"
 
 # 系统更新部分添加绿色进度提示
-echo "${SUCCESS_COLOR}▶ 正在更新系统软件包...${RESET_COLOR}"
-sudo yum update -y || { echo "${ERROR_COLOR}✖ 系统更新失败${RESET_COLOR}"; exit 1; }
+# echo "${SUCCESS_COLOR}▶ 正在更新系统软件包...${RESET_COLOR}"
+# sudo yum update -y || { echo "${ERROR_COLOR}✖ 系统更新失败${RESET_COLOR}"; exit 1; }
 
 # 软件安装部分添加绿色进度提示
 echo "${SUCCESS_COLOR}▶ 正在安装所需软件包...${RESET_COLOR}"
@@ -29,32 +33,25 @@ sudo yum install -y git cmake libasan gcc gcc-c++ || { echo "${ERROR_COLOR}✖ �
 echo "${SECTION_COLOR}════════════════════════════════════════"
 echo " 正在克隆 pcm 仓库 "
 echo "════════════════════════════════════════${RESET_COLOR}"
-git clone --recursive https://github.com/intel/pcm || { echo "${ERROR_COLOR}✖ 仓库克隆失败${RESET_COLOR}"; exit 1; }
+git clone --recursive ssh://git@192.168.1.250:222/zzh/pcm.git || { echo "${ERROR_COLOR}✖ 仓库克隆失败，请确保已连接实验室内网${RESET_COLOR}"; exit 1; }
 
 # 编译构建部分添加蓝色分隔线
 echo "${SECTION_COLOR}════════════════════════════════════════"
 echo " 正在构建 PCM 工具 "
 echo "════════════════════════════════════════${RESET_COLOR}"
-cd build || { echo "${ERROR_COLOR}✖ 切换构建目录失败${RESET_COLOR}"; exit 1; }
-cmake .. || { echo "${ERROR_COLOR}✖ CMake配置失败${RESET_COLOR}"; exit 1; }
-cmake --build . || { echo "${ERROR_COLOR}✖ 构建失败${RESET_COLOR}"; exit 1; }
-
 echo "切换到 pcm 目录..."
 cd pcm
 
 echo "创建构建目录..."
 mkdir build || { echo '创建构建目录失败'; exit 1; }
 
-echo "切换到构建目录..."
-cd build || { echo '切换构建目录失败'; exit 1; }
+cd build || { echo "${ERROR_COLOR}✖ 切换构建目录失败${RESET_COLOR}"; exit 1; }
 
 build_dir=$(pwd)
 
-echo "使用 cmake 配置构建..."
-cmake .. || { echo 'CMake配置失败'; exit 1; }
+cmake .. || { echo "${ERROR_COLOR}✖ CMake配置失败${RESET_COLOR}"; exit 1; }
+cmake --build . || { echo "${ERROR_COLOR}✖ 构建失败${RESET_COLOR}"; exit 1; }
 
-echo "正在构建 pcm..."
-cmake --build . || { echo '构建失败'; exit 1; }
 
 echo "切换到工具目录..."
 cd bin
@@ -84,6 +81,8 @@ RESET_COLOR="$(tput sgr0)"
 
 cat <<EOF
 
+CLEANUP=false
+
 ${SUCCESS_COLOR}=== PCM 工具安装完成 ===${RESET_COLOR}
 
 现在可以通过以下命令使用 PCM 监控工具：
@@ -105,3 +104,5 @@ ${SUCCESS_COLOR}─────────────────────�
 建议使用 sudo 执行监控命令
 ──────────────────────${RESET_COLOR}
 EOF
+
+CLEANUP=false
